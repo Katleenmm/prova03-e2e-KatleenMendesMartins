@@ -1,82 +1,72 @@
 import { Page, expect } from '@playwright/test';
 import NarwalContactElements from '../elements/NarwalContactElements';
-import BasePage from './BasePage';
 
-export default class NarwalContactPage extends BasePage {
-  readonly contactElements: NarwalContactElements;
+export default class NarwalContactPage {
+  readonly el: NarwalContactElements;
 
-  constructor(readonly page: Page) {
-    super(page);
-    this.contactElements = new NarwalContactElements(page);
+  constructor(private page: Page) {
+    this.el = new NarwalContactElements(page);
   }
 
-  async goto(): Promise<void> {
-    await this.page.goto('https://www.narwalsistemas.com.br/#contato');
-
-    await this.page.waitForLoadState('networkidle');
-
-    await expect(
-      this.contactElements.getNameField()
-    ).toBeVisible({ timeout: 20000 });
+  async navigate() {
+    await this.page.goto('https://www.narwalsistemas.com.br/contato/', {
+      waitUntil: 'domcontentloaded'
+    });
   }
 
-  async verifyContactSection(): Promise<void> {
-    await expect(
-      this.contactElements.getNameField()
-    ).toBeVisible();
+  async waitForContactForm() {
+    await this.el.getNameField().waitFor({ state: 'visible', timeout: 20000 });
+  }
 
-    await expect(
-      this.contactElements.getEmailField()
-    ).toBeVisible();
+  async verifyContactSection() {
+    await expect(this.el.getNameField()).toBeVisible();
+    await expect(this.el.getEmailField()).toBeVisible();
+    await expect(this.el.getCargoField()).toBeVisible();
+    await expect(this.el.getPhoneField()).toBeVisible();
+    await expect(this.el.getEmpresaField()).toBeVisible();
+    await expect(this.el.getOperacaoDropdown()).toBeVisible();
   }
 
   async fillContactForm(data: {
     name: string;
     email: string;
-    job: string;
+    cargo: string;
     phone: string;
-    company: string;
-    operation: string;
-  }): Promise<void> {
+    empresa: string;
+    operacao?: string;
+  }) {
+    await this.el.getNameField().fill(data.name);
+    await this.el.getEmailField().fill(data.email);
+    await this.el.getCargoField().fill(data.cargo);
+    await this.el.getPhoneField().fill(data.phone);
+    await this.el.getEmpresaField().fill(data.empresa);
 
-    await this.contactElements
-      .getNameField()
-      .first()
-      .fill(data.name);
-
-    await this.contactElements
-      .getEmailField()
-      .first()
-      .fill(data.email);
-
-    const jobField = this.contactElements.getJobField();
-
-    if (await jobField.count()) {
-      await jobField.first().fill(data.job);
-    }
-
-    await this.contactElements
-      .getPhoneField()
-      .first()
-      .fill(data.phone);
-
-    await this.contactElements
-      .getCompanyField()
-      .first()
-      .fill(data.company);
-
-    const select = this.contactElements.getOperationSelect();
-
-    if (await select.count()) {
-      await select.first().selectOption({ index: 1 });
+    if (data.operacao) {
+      await this.el
+        .getOperacaoDropdown()
+        .selectOption({ label: data.operacao });
     }
   }
 
-  async submitForm(): Promise<void> {
-    const button = this.contactElements.getSendButton().first();
+  async submitForm() {
+    // Fechar o chat do Leadster se estiver aberto
+    const chatCloseButton = this.page
+      .locator(
+        '[class*="close"], [aria-label*="fechar"], [aria-label*="close"]'
+      )
+      .first();
+    const chatVisible = await chatCloseButton.isVisible().catch(() => false);
+    if (chatVisible) {
+      await chatCloseButton.click();
+      await this.page.waitForTimeout(500);
+    }
 
-    await button.scrollIntoViewIfNeeded();
+    // Scroll até o botão e clicar
+    const submitBtn = this.el.getSubmitButton();
+    await submitBtn.scrollIntoViewIfNeeded();
+    await submitBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await submitBtn.click();
 
-    await button.click();
+    await this.page.waitForTimeout(3000);
   }
 }

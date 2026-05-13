@@ -1,46 +1,35 @@
-import { Locator, Page } from '@playwright/test';
-import BaseElements from './BaseElements';
+import { Page } from '@playwright/test';
 
-export default class NarwalContactElements extends BaseElements {
-  constructor(readonly page: Page) {
-    super(page);
+export default class NarwalContactElements {
+  constructor(private page: Page) {}
+
+  getNameField() {
+    return this.page.locator('input[placeholder="Nome *"]');
   }
 
-  getFormTitle(): Locator {
-    return this.page.getByText('Receba um atendimento comercial');
+  getEmailField() {
+    return this.page.locator('input[placeholder="Email corporativo *"]');
   }
 
-  getNameField(): Locator {
-    return this.page.locator('input[placeholder*="Nome"]');
+  getCargoField() {
+    return this.page.locator('input[placeholder="Cargo *"]');
   }
 
-  getEmailField(): Locator {
-    return this.page.locator('input[placeholder*="E-mail"]');
+  getPhoneField() {
+    return this.page.locator('input[placeholder="Telefone *"]');
   }
 
-  getJobField(): Locator {
+  getEmpresaField() {
+    return this.page.locator('input[placeholder="Empresa *"]');
+  }
+
+  getOperacaoDropdown() {
+    return this.page.locator('select').first();
+  }
+
+  getSubmitButton() {
     return this.page.locator(
-      'input[placeholder*="Cargo"], input[name*="cargo"]'
+      'input[value="Enviar"], button:has-text("Enviar"), input[type="submit"]'
     );
-  }
-
-  getPhoneField(): Locator {
-    return this.page.locator(
-      'input[placeholder*="Telefone"], input[type="tel"]'
-    );
-  }
-
-  getCompanyField(): Locator {
-    return this.page.locator(
-      'input[placeholder*="Empresa"]'
-    );
-  }
-
-  getOperationSelect(): Locator {
-    return this.page.locator('select');
-  }
-
-  getSendButton(): Locator {
-    return this.page.getByRole('button', { name: /enviar|continuar/i });
   }
 }

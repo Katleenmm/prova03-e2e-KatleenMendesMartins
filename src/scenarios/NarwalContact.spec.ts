@@ -1,34 +1,23 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import NarwalContactPage from '../support/pages/NarwalContactPage';
 
 test.describe('Contato Narwal', () => {
+  test('Preencher e enviar formulário de contato', async ({ page }) => {
+    const narwal = new NarwalContactPage(page);
 
-  let narwalContactPage: NarwalContactPage;
+    await narwal.navigate();
+    await narwal.waitForContactForm();
+    await narwal.verifyContactSection();
 
-  test.beforeEach(async ({ page }) => {
-
-    narwalContactPage = new NarwalContactPage(page);
-
-    await narwalContactPage.goto();
-  });
-
-  test('Enviar formulário de contato na página Narwal', async ({ page }) => {
-
-    await narwalContactPage.verifyContactSection();
-
-    await narwalContactPage.fillContactForm({
-      name: 'Teste Narwal',
-      email: 'teste.narwal@example.com',
-      job: 'Analista de Comércio Exterior',
-      phone: '48999999999',
-      company: 'Empresa de Teste',
-      operation: 'Importação',
+    await narwal.fillContactForm({
+      name: 'Teste Automático',
+      email: 'teste@example.com',
+      cargo: 'Analista',
+      phone: '(48) 99999-9999',
+      empresa: 'Empresa Teste',
+      operacao: 'Importação'
     });
 
-    await narwalContactPage.submitForm();
-
-    await page.waitForTimeout(5000);
-
-    await expect(page).toHaveURL(/narwalsistemas/i);
+    await narwal.submitForm();
   });
 });
