@@ -1,7 +1,3 @@
 application:
-  base_url: "https://google.com"
-  narwal_QA: "https://www.narwalsistemas.com.br/#contato"
-  bugereats_QA: "https://buger-eats.vercel.app/"
-  sauceDemo: "https://www.saucedemo.com/"
-  farmacia: "https://triersistemas.com.br/contato"
-  empresa: "https://www.betha.com.br/contato"
+  iest_url: "https://www.iestgroup.com.br/contato"
+ 

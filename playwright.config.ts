@@ -1,12 +1,11 @@
 import { PlaywrightTestConfig } from '@playwright/test';
 
-// headless: true automaticamente no CI (GitHub Actions), false local
 const isCI = !!process.env.CI;
 
 const config: PlaywrightTestConfig = {
   testDir: 'src/scenarios',
   timeout: 120000,
-  retries: isCI ? 1 : 0, // 1 retry no CI para compensar lentidão de rede
+  retries: isCI ? 1 : 0,
   use: {
     trace: 'on',
     locale: 'pt-BR',
